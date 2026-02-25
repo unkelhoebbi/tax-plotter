@@ -96,22 +96,18 @@ def federal_tax(income: float, tax_category: list) -> float:
     return max(0.0, (income - threshold) * rate + base)
 
 def cantonal_tax(income: float, tax_category: list) -> float:
-    t = pd.DataFrame(tax_category, columns=["For the next CHF", "Additional %"])
-    t["For the next CHF"] = t["For the next CHF"].apply(parse_chf)
-    t["Additional %"] = t["Additional %"].apply(parse_chf)
-    t = t.sort_values("For the next CHF")
     if income <= 0:
         return 0.0
     total_tax = 0.0
-    for i, row in t.iterrows():
-        threshold = row["For the next CHF"]
-        rate = row["Additional %"] / 100.0
-        if income > threshold:
-            total_tax += threshold * rate
-            income -= threshold
-        else:
-            total_tax += income * rate
+    remaining_income = income
+    for amount_str, rate_str in tax_category:
+        bracket_amount = parse_chf(amount_str)
+        rate = parse_chf(rate_str) / 100.0
+        if remaining_income <= 0:
             break
+        taxable_in_bracket = min(remaining_income, bracket_amount)
+        total_tax += taxable_in_bracket * rate
+        remaining_income -= taxable_in_bracket
     return total_tax * 0.98
 
 def calculate_percentage(tax_amount: float, income: float) -> float:
@@ -144,20 +140,23 @@ percentage_total = [
     for federal, cantonal, municipal in zip(percentage_federal, percentage_cantonal, percentage_municipal)
 ]
 
-plt.figure(figsize=(12, 8))
-plt.plot(income_list, percentage_federal, label="Bund - Alleinstehend ohne Kinder")
-plt.plot(income_list, percentage_cantonal, label="Kanton - Alleinstehend ohne Kinder")
-plt.plot(income_list, percentage_municipal, label="Gemeinde - Alleinstehend ohne Kinder")
-plt.plot(income_list, percentage_total, label="Total - Alleinstehend ohne Kinder", linestyle="--")
-plt.xticks(
-    np.arange(0, 300001, 10000),
-    [f"{x:,.0f}".replace(",", "'") + " CHF" for x in range(0, 300001, 10000)],
-    rotation=45
-)
-plt.xlabel("Steuerbares Einkommen (CHF)")
-plt.ylabel("Steuertarif (%)")
-plt.title("Steuertarif: Bundessteuer, Kantonssteuer(98%) & Gemeindesteuer (119%) & Total")
-plt.legend()
-plt.grid(True)
+fig, ax = plt.subplots(figsize=(12, 8))
+
+# Plot the percentage lines
+ax.plot(income_list, percentage_federal, label="Bund - Alleinstehend ohne Kinder")
+ax.plot(income_list, percentage_cantonal, label="Kanton - Alleinstehend ohne Kinder")
+ax.plot(income_list, percentage_municipal, label="Gemeinde - Alleinstehend ohne Kinder")
+ax.plot(income_list, percentage_total, label="Total - Alleinstehend ohne Kinder", linestyle="--")
+
+# Configure the primary y-axis
+ax.set_ylabel("Steuertarif (%)")
+ax.set_xlabel("Steuerbares Einkommen (CHF)")
+ax.set_xticks(np.arange(0, 300001, 10000))
+ax.set_xticklabels([f"{x:,.0f}".replace(",", "'") + " CHF" for x in range(0, 300001, 10000)], rotation=45)
+ax.legend(loc="upper left")
+ax.grid(True)
+
+# Set the title and layout
+plt.title("Steuertarif und Steuerbetrag: Bundessteuer, Kantonssteuer, Gemeindesteuer & Total")
 plt.tight_layout()
 plt.show()
