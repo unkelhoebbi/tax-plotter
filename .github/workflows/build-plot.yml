@@ -42,14 +42,15 @@ jobs:
             exit 1
           fi
 
-          if git diff --quiet -- img/plot.png; then
+          git add img/plot.png
+
+          if git diff --cached --quiet; then
             echo "No plot changes to commit"
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add img/plot.png
           git commit -m "chore: update generated plot"
           git push
 
