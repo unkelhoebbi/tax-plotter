@@ -4,4 +4,4 @@ Die Daten sind von hier https://swisstaxcalculator.estv.admin.ch/#/taxdata/tax-s
 
 Aktuell generierter Plot:
 
-![Aktueller Steuerplot](./plot.png)
+![Aktueller Steuerplot](./img/plot.png)

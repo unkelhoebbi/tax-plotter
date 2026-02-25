@@ -161,7 +161,8 @@ ax.grid(True)
 plt.title("Steuertarif und Steuerbetrag: Bundessteuer, Kantonssteuer (Zürich), Gemeindesteuer & Total")
 plt.tight_layout()
 
-output_path = "plot.png"
+os.makedirs("img", exist_ok=True)
+output_path = "img/plot.png"
 plt.savefig(output_path)
 
 if os.environ.get("CI", "").lower() != "true":
