@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -159,4 +160,9 @@ ax.grid(True)
 # Set the title and layout
 plt.title("Steuertarif und Steuerbetrag: Bundessteuer, Kantonssteuer, Gemeindesteuer & Total")
 plt.tight_layout()
-plt.show()
+
+output_path = "plot.png"
+plt.savefig(output_path)
+
+if os.environ.get("CI", "").lower() != "true":
+    plt.show()
