@@ -158,7 +158,7 @@ ax.legend(loc="upper left")
 ax.grid(True)
 
 # Set the title and layout
-plt.title("Steuertarif und Steuerbetrag: Bundessteuer, Kantonssteuer, Gemeindesteuer & Total")
+plt.title("Steuertarif und Steuerbetrag: Bundessteuer, Kantonssteuer (Zürich), Gemeindesteuer & Total")
 plt.tight_layout()
 
 output_path = "plot.png"
