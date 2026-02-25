@@ -2,6 +2,11 @@ name: Build tax plot
 
 on:
   push:
+    paths-ignore:
+      - "plot.png"
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -29,6 +34,24 @@ jobs:
         env:
           CI: "true"
         run: python tax-plotter.py
+
+      - name: Commit updated plot
+        run: |
+          if [ ! -f plot.png ]; then
+            echo "plot.png was not generated"
+            exit 1
+          fi
+
+          if git diff --quiet -- plot.png; then
+            echo "No plot changes to commit"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add plot.png
+          git commit -m "chore: update generated plot"
+          git push
 
       - name: Upload plot artifact
         uses: actions/upload-artifact@v4
